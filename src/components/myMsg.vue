@@ -28,10 +28,11 @@ export default {
     align-items:flex-start;
     justify-content:flex-start;
     margin-bottom:8px;
+    margin-top:8px;
     
     .avatar {
-      height: 30px;
-      width: 30px; 
+      height: 45px;
+      width: 45px; 
       }
     
     .InfoArea {
@@ -40,22 +41,20 @@ export default {
       margin-right:5px;
       
       .msgArea {   
-          display: inline-block;
+          display: flex;
           position: relative;
-          max-width:160px;
-          min-width:40px;
-          padding:0 5px;
+          align-items: center;
+          max-width:240px;
+          min-width:20px;
+          padding:0 8px;
+          min-height:45px;
           background-color:#CCFF99;
           color:#000;
           border-radius: 2px;
-          text-align:start;
           .msg {
-            margin:0 auto;
             display:inline;  
-            font-size:20px; 
+            font-size:16px; 
             word-wrap: break-word;
-            word-spacing: 3px;
-            white-space:pre-line ;
             &:after {
               content:'';
               display: inline-block;

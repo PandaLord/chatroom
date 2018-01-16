@@ -6,16 +6,12 @@
       <a class="moreFunctions"></a>
     </div>
     <div class="chatArea" id="chat_con">
-      <div class="chatBubble"
-        v-for="(msgData,index) in msgList"
-        :key="index">
-        <system-msg v-if="msgData.msgType === 1">
-        </system-msg>
+      <template v-for="msgData in msgList">
         <my-msg class="clearfix" :data="msgData" v-if="msgData.userName === userName">
         </my-msg>
         <other-msg class="clearfix" v-else :data="msgData" >
         </other-msg>
-      </div>
+      </template>
     </div>
     <footer>
        <input 
@@ -57,7 +53,8 @@ export default {
     })
     p.socket.on("messageReceived", function (data) {
       p.msgList.push(data)
-      // scro.scrollTo(0, scro.scrollHeight)
+      let scro = document.getElementById("chat_con")
+      
     })
     p.socket.on("musicOrderReceived", function (data) {
 
@@ -114,29 +111,26 @@ export default {
   }
   
   .viewport {
-    width:100%; //+18px这里是一个trick来隐藏滚动条
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     height:100%;
-    position:fixed;
-    display: block;
-    background-color:#e9e7ef;
+    
+    
   }
 
   .header {
     width:100%;
-    height:100%;
-    position: fixed;
     display:flex;
     align-items: center;
     justify-content: space-between;
-    top:0;
-    left: 0;
-    z-index:1000;
     font-size:25px;
-    height: 40px;
+    height: 50px;
     background-color:#35495e;
     color:#fff;
     .title {
       display: inline;
+      flex:0 0 auto;
     }
     .back {
       &:before {
@@ -158,24 +152,15 @@ export default {
   }
   
   .chatArea {
-    display:block;
-    position: relative;
+    height: ~'calc(100% - 100px)';
     background-color:#e9e7ef;
     overflow-y: scroll;
-    height:100%;
-    top:40px;
-    // .chatBubble {
-    //   margin-bottom:2%;
-    //   &:last-child {
-    //     margin-bottom:0;
-    //   }
-    // }
+    
+    
   }
 
   footer {
     display: flex;
-    position: fixed;
-    bottom: 0;
     width: 100%;
     height: 50px;
     background-color:#f0f0f4;

@@ -31,10 +31,11 @@ export default {
     align-content: flex-start;
     justify-content:flex-start;
     margin-bottom:8px;
+    margin-top:8px;
     
     .avatar {
-      height: 50px;
-      width: 50px; 
+      height: 45px;
+      width: 45px; 
       }
     
     .InfoArea {
@@ -46,26 +47,23 @@ export default {
         vertical-align: top;
         color:#666;
         line-height:20px;
-        font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
         
       }
       .msgArea {   
-          display: inline-block;
+          display: flex;
           position: relative;
-          max-width:160px;
-          min-width:40px;
-          padding:0 5px;
+          align-items: center;
+          max-width:240px;
+          min-width:20px;
+          min-height:32px;
+          padding:0 8px;
           background-color:#fff;
           color:#000;
           border-radius: 2px;
-          text-align:start;
           .msg {
-            margin:0 auto;
             display:inline;
-           
-            font-size:20px;  
+            font-size:16px;  
             word-wrap: break-word;
-            word-spacing: 3px;
             
             &:before {
               content:'';
