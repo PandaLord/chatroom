@@ -16,7 +16,7 @@ export default {
     }
   },
   ready () {
-    this.$el.scrollIntoView()
+
   },
   props:["data"]
 }
@@ -29,10 +29,12 @@ export default {
     justify-content:flex-start;
     margin-bottom:8px;
     margin-top:8px;
+    margin-right:18px;
     
     .avatar {
       height: 45px;
       width: 45px; 
+      background-color:#e9e7ef;
       }
     
     .InfoArea {

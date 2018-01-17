@@ -35,7 +35,8 @@ export default {
     
     .avatar {
       height: 45px;
-      width: 45px; 
+      width: 45px;
+      background-color: #e9e7ef; 
       }
     
     .InfoArea {

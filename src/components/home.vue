@@ -12,6 +12,7 @@
         <other-msg class="clearfix" v-else :data="msgData" >
         </other-msg>
       </template>
+      <div id="end"></div>
     </div>
     <footer>
        <input 
@@ -47,13 +48,17 @@ export default {
   mounted () {
     var p = this
     p.socket = io("ws://localhost:8081/home")
-    p.socket.on("loginName", function (name) {
-      console.log("登录名称已接收到：" + name)
-      p.userName = name
-    })
+    p.userName = p.$route.params.id
     p.socket.on("messageReceived", function (data) {
       p.msgList.push(data)
-      let scro = document.getElementById("chat_con")
+      // 这里的nextTick是针对vue更新DOM后再获取，否则会有DOM更新与方法执行的时间差
+      p.$nextTick(() => {
+        let end = document.getElementById("chat_con")
+        // 这里是使滚动条滚到最底部的代码
+        end.scrollTop = end.scrollHeight
+      })
+      
+      
       
     })
     p.socket.on("musicOrderReceived", function (data) {
@@ -109,13 +114,16 @@ export default {
   .clearfix {
     clear: both;
   }
-  
+  #end {
+    height: 0;
+    
+  }
   .viewport {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height:100%;
-    
+    overflow-x: hidden;
     
   }
 
@@ -155,6 +163,8 @@ export default {
     height: ~'calc(100% - 100px)';
     background-color:#e9e7ef;
     overflow-y: scroll;
+    
+    width:~'calc(100% + 18px)'
     
     
   }

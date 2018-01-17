@@ -39,22 +39,26 @@ export default {
     var p = this
     p.socket = io("ws://localhost:8081")
     p.socket.on("loginSuccess", function (data) { 
-      p.loginSuccess = true
-      console.log("接受登录成功信息")
-      setTimeout(function () {
-        p.$router.replace("/home")
-      },1500)
+      if (data.userName === p.userName) {
+        p.loginSuccess = true
+        console.log("接受登录成功信息")
+        setTimeout(function () {
+          p.$router.replace(`/home/${p.userName}`)
+        },1500)
+      } else {
+        p.loginFailure = true
+        p.loginErr = "昵称传递失败"
+      }
+      
     })
     p.socket.on("loginFailure", function (err) {
       p.loginFailure = true
       p.loginErr = err
-      console.log(err)  
     })
   },
   methods: {
     login () {
-      var p = this
-      
+      var p = this  
       p.socket.emit("login", this.userName)  
     },
   }

@@ -6,11 +6,10 @@ server.listen(8081)
 var userNames = []
 var userDatas = {}
 var msgList = []
-var loginName = null
 
 io.on('connection', function (socket) {
   console.log("有用户进入注册页面")
-  
+  let loginName = null
   function login (name) {
     if (name === '') {
       socket.emit('loginFailure',"不能使用空白昵称")
@@ -52,15 +51,16 @@ io.on('connection', function (socket) {
 const home = io.of('/home')
 home.on('connection', function (socket) {
   console.log('有用户进入聊天室')
-  console.log('当前聊天室有'+ userNames)
-  socket.emit("loginName", loginName)
+  console.log('当前聊天室有'+ userNames )
 
   function sendMessage (data) {
     msgList.push(data)
     home.emit("messageReceived", data)
     console.log(data.userName + ":" + data.msg)
     }
+
   socket.on('sendMessage', sendMessage)
+  
 })
 console.log("this server is running on 8081")
 
