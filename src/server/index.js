@@ -51,8 +51,8 @@ io.on('connection', function (socket) {
 const home = io.of('/home')
 home.on('connection', function (socket) {
   console.log('有用户进入聊天室')
-  console.log('当前聊天室有'+ userNames )
-
+  console.log('当前聊天室有'+ userNames)
+  home.emit("usersAmount", userNames.length)
   function sendMessage (data) {
     msgList.push(data)
     home.emit("messageReceived", data)

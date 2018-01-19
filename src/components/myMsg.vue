@@ -24,6 +24,7 @@ export default {
 <style lang="less" scoped>
  .myMsg {
     float: right;
+    display: -webkit-flex; /* Safari */
     display: flex;
     align-items:flex-start;
     justify-content:flex-start;
@@ -43,6 +44,7 @@ export default {
       margin-right:5px;
       
       .msgArea {   
+          display: -webkit-flex; /* Safari */
           display: flex;
           position: relative;
           align-items: center;

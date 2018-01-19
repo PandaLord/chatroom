@@ -26,6 +26,7 @@ export default {
 <style lang="less" scoped>
  .otherMsg {
     float: left;
+    display: -webkit-flex; /* Safari */
     display: flex;
     align-items:flex-start;
     align-content: flex-start;
@@ -51,6 +52,7 @@ export default {
         
       }
       .msgArea {   
+          display: -webkit-flex; /* Safari */
           display: flex;
           position: relative;
           align-items: center;

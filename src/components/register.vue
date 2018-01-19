@@ -96,6 +96,7 @@ export default {
         line-height:25px;
         margin:0 auto;
         width:280px;
+        display: -webkit-flex; /* Safari */
         display: inline-flex;
         white-space: nowrap;
         justify-content: space-between;
