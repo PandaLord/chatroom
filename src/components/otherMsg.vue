@@ -45,7 +45,7 @@ export default {
       position: relative;
       margin-left:5px;
       .userName {
-        font-size:8px;
+        font-size:16px;
         vertical-align: top;
         color:#666;
         line-height:20px;
@@ -58,7 +58,7 @@ export default {
           align-items: center;
           max-width:240px;
           min-width:20px;
-          min-height:32px;
+          min-height:45px;
           padding:0 8px;
           background-color:#fff;
           color:#000;

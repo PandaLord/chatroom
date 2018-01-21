@@ -3,24 +3,42 @@
     <div class="header">
       <a class="back"></a>
       <h1 class="title">熊猫的聊天室({{ userAmount }})</h1>
-      <a class="moreFunctions" @click="moreFShow = !moreFShow"></a>
-      <more-function v-if="moreFShow"></more-function>
+      <a class="moreFunctions"  @click="moreFShow = !moreFShow"></a>
+      <more-function 
+      v-if="moreFShow" 
+      @musicOrder="orderMusic" 
+      @backToChat="simuClick"
+      @click.native="moreFShow = false"
+      @musicLoading="isLoadingMusic = true">
+      </more-function>
     </div>
-    
-    <div class="chatArea" id="chat_con" @click="moreFShow = false">
+    <toast
+    v-model="isLoadingMusic" 
+    position="middle" 
+    :time="1800" 
+    :text="'搜索中，完成后添加至歌单序列'"  
+    :is-show-mask="true"></toast>
+    <toast v-model="musicError" type="cancel" position="middle" text="音乐获取失败，请稍后重试" :time="1600"></toast>
+    <music-player :song="musicList[0]" @musicEnd="autoSwitch"></music-player>
+    <div class="chatArea" id="chat_con" @click="chatWindowClick">
       <template v-for="msgData in msgList">
-        <my-msg class="clearfix" :data="msgData" v-if="msgData.userName === userName">
+        <system-msg class="clearfix"
+        v-if="msgData.msgType === 0"
+        :data="msgData">
+        </system-msg>
+        <my-msg class="clearfix" 
+        :data="msgData" 
+        v-else-if="msgData.userName === userName">
         </my-msg>
         <other-msg class="clearfix" v-else :data="msgData" >
         </other-msg>
       </template>
-      <div id="end"></div>
     </div>
     <footer>
        <input 
         class="msgInput" 
         v-model="message"
-        @keyup.13="sendMessage"/>        
+        @keyup.13="sendMessage(1,message,userName)"/>        
         <button class="emojiButton" @click="animateEmoji">
           <img src="../images/icons/emoji_30px.png">
         </button>
@@ -38,8 +56,9 @@ import otherMsg from "./otherMsg.vue"
 import systemMsg from './systemMsg.vue'
 import emoji from './emoji.vue'
 import moreFunction from './moreFunctions.vue'
+import musicPlayer from './music.vue'
 import io from "socket.io-client"
-
+import { Toast } from "vux"
 
 export default {
   name: "Home",
@@ -51,6 +70,10 @@ export default {
       emojiSwitch: false,
       moreFShow: false,
       userAmount: 0,
+      musicList:[],
+      musicError: false,
+      isLoadingMusic:false,
+      
 
     }
   },
@@ -60,36 +83,56 @@ export default {
     systemMsg,
     emoji,
     moreFunction,
+    musicPlayer,
+    Toast,
   },
   mounted () {
     var p = this
     p.socket = io("ws://localhost:8081/home")
     p.userName = p.$route.params.id
+    p.socket.emit("passUserName", p.userName)
     p.socket.on("messageReceived", function (data) {
       p.msgList.push(data)
       // 这里的nextTick是针对vue更新DOM后再获取，否则会有DOM更新与方法执行的时间差
       p.chatScroll()  
     })
     p.socket.on("usersAmount",function (amount) {
+      console.log("接受到服务端发送的在线人数")
+      console.log(amount)
       p.userAmount = amount
     })
-    p.socket.on("musicOrderReceived", function (data) {
+    p.socket.on("orderedMusicList", function (list) {
+      p.musicList = list
     })
+    p.socket.on("musicOrderReceived", function (data) {
+      console.log("接收到服务端传来的音乐url")
+      p.musicList.push(data)
+    })
+    p.socket.on("musicOrderError", function (data) {
+      p.isLoadingMusic = false
+      p.musicError = true
+
+    })
+    
   },
   methods: {
-    sendMessage () {
+    sendMessage (type,message,user) {
       var p = this
-      var msg = p.message;
-      if (msg !== '') {
+      if (message !== '') {
           let reqData = {
-            userName:p.userName,
-            msgType:0,
+            userName:user,
+            msgType:type,
             msgDate:new Date(),
-            msg
+            msg:message,
           }
-        p.message = ''
         p.socket.emit("sendMessage", reqData)
       }     
+      if (type === 1) {
+        p.message = ''
+      }
+    },
+    autoSwitch () { 
+      this.musicList.shift()     
     },
     chatScroll () {
       this.$nextTick(() => {
@@ -105,8 +148,18 @@ export default {
     sendEmoji () {
 
     },
-    orderMusic () {
-
+    orderMusic (songName) {
+      console.log('接收到子组件传来的音乐搜索要求，歌曲名为：' + songName)
+      this.socket.emit("orderMusic", {
+        user:this.userName,
+        song:songName,
+      })
+    },
+    simuClick () {
+      this.chatWindowClick()
+    },
+    chatWindowClick () {
+      this.moreFShow = false
     }
   }
 }
@@ -145,6 +198,7 @@ export default {
 
   .header {
     width:100%;
+    overflow:hidden;
     display:flex;
     flex:1 0 auto;
     align-items: center;
@@ -180,7 +234,8 @@ export default {
     height: ~'calc(100% - 100px)';
     background-color:#e9e7ef;
     overflow-y: scroll; 
-    width:~'calc(100% + 18px)'
+    width:~'calc(100% + 18px)';
+    overflow-x:hidden;
   }
 
   footer {
