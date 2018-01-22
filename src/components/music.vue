@@ -12,45 +12,11 @@
 </template>
 <script>
 export default {
-
   data () { 
     return {
       isPlaying:true,
     }
   },
-  
-  // mounted () {
-  //   var p = this
-  //   let audio = document.getElementById("music")
-  //   if (audio) {
-  //     console.log("添加事件监听")
-  //     audio.loop = false
-  //     audio.addEventListener("ended", function () {
-  //       p.nextSong()
-  //     })
-  //   } 
-  // },
-  
-  // mounted () {
-  //   let audio = document.getElementById('music')
-  //   if (audio) {
-  //     this.musicEnd = audio.ended
-  //     console.log(this.musicEnd)        
-  //   } 
-  // },  
-  // watch: {
-  //   audio: {
-  //     handler:function (curr,old) {
-  //       if (curr) {
-  //         console.log("bingo")
-  //         console.log(curr)
-  //         this.nextSong()
-  //       }
-
-  //     },
-  //     deep:true
-  //   }
-  // },
   methods: {
     playMusic () {
       this.isPlaying = !this.isPlaying

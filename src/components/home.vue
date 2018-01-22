@@ -18,7 +18,7 @@
     :time="1800" 
     :text="'搜索中，完成后添加至歌单序列'"  
     :is-show-mask="true"></toast>
-    <toast v-model="musicError" type="cancel" position="middle" text="音乐获取失败，请稍后重试" :time="1600"></toast>
+    <toast v-model="musicError" type="cancel" position="middle" text="音乐获取失败，请稍后重试" :time="2000"></toast>
     <music-player :song="musicList[0]" @musicEnd="autoSwitch"></music-player>
     <div class="chatArea" id="chat_con" @click="chatWindowClick">
       <template v-for="msgData in msgList">
@@ -35,10 +35,18 @@
       </template>
     </div>
     <footer>
-       <input 
-        class="msgInput" 
-        v-model="message"
-        @keyup.13="sendMessage(1,message,userName)"/>        
+       <div class="expandArea">
+         <pre class="msgInput hide">{{ message }}</pre>
+         <textarea 
+          class="msgInput"
+          id="msgInput"
+          v-model="message"
+          @keyup.13="sendMessage(1,message,userName)"
+          @input="textAreaSuit"
+          >
+          </textarea> 
+       </div>
+              
         <button class="emojiButton" @click="animateEmoji">
           <img src="../images/icons/emoji_30px.png">
         </button>
@@ -73,6 +81,7 @@ export default {
       musicList:[],
       musicError: false,
       isLoadingMusic:false,
+      avatar:"",
       
 
     }
@@ -90,6 +99,7 @@ export default {
     var p = this
     p.socket = io("ws://localhost:8081/home")
     p.userName = p.$route.params.id
+    p.avatar = p.$route.hash.slice(1)
     p.socket.emit("passUserName", p.userName)
     p.socket.on("messageReceived", function (data) {
       p.msgList.push(data)
@@ -124,12 +134,15 @@ export default {
             msgType:type,
             msgDate:new Date(),
             msg:message,
+            avatar:p.avatar
           }
         p.socket.emit("sendMessage", reqData)
       }     
       if (type === 1) {
         p.message = ''
-      }
+        let textarea = document.getElementById("msgInput")
+        textarea.style.height = "28px"   
+      } 
     },
     autoSwitch () { 
       this.musicList.shift()     
@@ -160,6 +173,14 @@ export default {
     },
     chatWindowClick () {
       this.moreFShow = false
+    },
+    textAreaSuit () {
+      let textarea = document.getElementById("msgInput")
+      let pre = document.getElementsByClassName("hide")[0]
+      this.$nextTick(() => {
+        textarea.style.height = pre.offsetHeight + "px"
+      })
+      
     }
   }
 }
@@ -247,9 +268,32 @@ export default {
     border: 3px solid #f0f0f4;
     box-shadow: 1px 0 3px 0 rgba(0, 0, 0, 0.3);
     align-items: center;
+    
+    .expandArea {
+      position: relative;
+      display:flex;
+      flex:1 0 auto;
+      align-items:center;
+      .msgInput {
+        width:100%;
+        font-size:18px;
+        resize:none;
+        overflow:hidden;
+        word-wrap: break-word;
+        word-break:break-all;
+        min-height:28px;
+        max-height:130px;
+        line-height:22px;
+      }
+      .hide {
+        position: absolute;
+        z-index:-1;
+        visibility: hidden;
+        white-space: pre-wrap;
+      }
+    }
 
-
-    .msgInput {
+    #msgInput {
       flex:1 0 auto;
       height: 40px;
       &:focus {

@@ -10,17 +10,23 @@ var msgList = []
 io.on('connection', function (socket) {
   console.log("有用户进入注册页面")
   let loginName = null
-  function login (name) {
+  function login (data) {
+    let name = data.name
+    let avatar = data.avatar
     if (name === '') {
       socket.emit('loginFailure',"不能使用空白昵称")
     } else if (userNames.indexOf(name) === -1) {
       userNames.push(name)
       userDatas.name = {
         id:userNames.length,
-        points:5
+        points:5,
+        avatar:avatar,
       }
       loginName = name
-      socket.emit("loginSuccess",{userName:name})
+      socket.emit("loginSuccess", {
+        userName:name,
+        avatar:avatar,
+      })
       console.log("登录成功，登录昵称为:" + name)
     } else {
       socket.emit("loginFailure", "昵称重复")
@@ -78,7 +84,6 @@ home.on('connection', function (socket) {
         id:res.songList[0].id,
         raw: false
         }).then(res => {
-          
           console.log("得到播放id")
           var data = {
             user:info.user,
@@ -86,8 +91,8 @@ home.on('connection', function (socket) {
             url:res.url
           }
           home.emit("musicOrderReceived", data)
-          sendSystemMessage(data.user + "点播了:" + data.name)
-          console.log("发送播放信息至客户端")
+          sendSystemMessage(data.user + "点播了 " + data.name)
+          console.log("发送播放信息至客户端") 
         })
     })
     .catch(err => {

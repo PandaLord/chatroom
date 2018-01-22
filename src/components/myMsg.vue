@@ -5,7 +5,7 @@
         <p class="msg">{{ data.msg }}</p>
       </div>
     </div> 
-    <img class="avatar" src="../images/pics/testAvatar.jpg" />
+    <img class="avatar" :src='"../images/pics/Avatar_" + data.avatar + "_45x45.png"' />
   </div>
 </template>
 <script>
@@ -27,7 +27,8 @@ export default {
     display: -webkit-flex; /* Safari */
     display: flex;
     align-items:flex-start;
-    justify-content:flex-start;
+    justify-content:flex-end;
+    width:100%;
     margin-bottom:8px;
     margin-top:8px;
     margin-right:18px;
@@ -39,43 +40,56 @@ export default {
       }
     
     .InfoArea {
-      display: block;
+      display: inline-block;
       position: relative;
-      margin-right:5px;
+      margin-right:10px;
+      max-width:45%;
+      flex:0 1 auto;
       
       .msgArea {   
           display: -webkit-flex; /* Safari */
           display: flex;
           position: relative;
           align-items: center;
-          max-width:240px;
+          max-width:100%;
           min-width:20px;
           padding:0 8px;
           min-height:45px;
           background-color:#CCFF99;
           color:#000;
           border-radius: 2px;
+          border:1px solid rgba(0,0,0,0.2);
           .msg {
             display:inline;  
             font-size:16px; 
             word-wrap: break-word;
+            word-break: break-all;        
+            &::before {
+              content:"";
+              display:inline-block;
+              position:absolute;
+              z-index:9;
+              top:3px;
+              right:-6px;
+              border:6px solid transparent;
+              border-left-color:rgba(0,0,0,0.3);
+              border-right-width:0;   
+            }
             &:after {
               content:'';
               display: inline-block;
               position: absolute;
-              right:-3px;
-              top:3px;
+              right:-5px;
+              top:4px;
+              z-index:10;
               width: 0;
               height: 0;
-              border:3px solid transparent;
+              border:5px solid transparent;
               border-left-color:#CCFF99;
               border-right-width: 0;
             }
           }
-        
       }
-      
     }
-
   }
 </style>

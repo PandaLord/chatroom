@@ -22,11 +22,10 @@ export default {
     align-items: center;   
     color:#fff;
     .msg {
-      
       padding:0 10px;
-      max-width:80%;
-      font-size:20px;
-      line-height:25px;
+      max-width:50%;
+      font-size:14px;
+      line-height:20px;
       border:1px solid transparent;
       border-radius:20px;
       flex:0 0 auto;
