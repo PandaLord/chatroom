@@ -185,7 +185,7 @@ export default {
     }
     .avatarBox {
       margin:10px auto 0 auto;
-      width:300px;
+      width:320px;
       .avatar-item {
         width:45px;
         height:45px;

@@ -1,5 +1,8 @@
 <template>
   <div class="viewport" >
+    <transition name="mainView">
+      <router-view class="view"></router-view>
+    </transition>
     <div class="header">
       <a class="back"></a>
       <h1 class="title">熊猫的聊天室({{ userAmount }})</h1>
@@ -126,9 +129,12 @@ export default {
     
   },
   methods: {
-    sendMessage (type,message,user) {
+    // 客户端发送消息方法
+    sendMessage (type,message,user) { // type区分系统消息和用户消息，user发送用户id
       var p = this
-      if (message !== '') {
+      let pattern = /\S+/
+      let test = message.match(pattern)
+      if (test) {
           let reqData = {
             userName:user,
             msgType:type,
@@ -188,19 +194,19 @@ export default {
 </script>
 <style lang="less" scoped>
   @font-face {
-    font-family: 'pingFang';
-    src: url('../fonts/pingFang/pingFang.eot');
-    src: url('../fonts/pingFang/pingFang.eot?#iefix') format('embeded-opentype'), /* IE6-8 */
-         url('../fonts/pingFang/pingFang.woff') format('woff'), /* chrome、firefox */
-         url('../fonts/pingFang/pingFang.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-         url('../fonts/pingFang/pingFang.svg#fontname') format('svg'); /* iOS 4.1- */
+    font-family: 'lihei';
+    src: url('../fonts/lihei/lihei.eot');
+    src: url('../fonts/lihei/lihei.eot?#iefix') format('embeded-opentype'), /* IE6-8 */
+         url('../fonts/lihei/lihei.woff') format('woff'), /* chrome、firefox */
+         url('../fonts/lihei/lihei.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+         url('../fonts/lihei/lihei.svg#fontname') format('svg'); /* iOS 4.1- */
   }
 
   * {
     padding:0;
     margin:0;
     font-size:18px;
-    font-family:'pingFang'
+    font-family:'lihei'
   }
   
   .clearfix {
@@ -216,6 +222,22 @@ export default {
     max-height:100%;
     
   }
+  .view {
+    width:100%;
+    position: absolute;
+    top:0;
+    left:0;
+  }
+  .mainView-enter-active,
+  .mainView-leave-active, {
+    transition:left .4s ease-in;
+   }
+  .mainView-leave-to {
+    left:-100%;
+  }
+  .mainView-enter {
+    left:100%;
+  }
 
   .header {
     width:100%;
@@ -224,33 +246,37 @@ export default {
     flex:1 0 auto;
     align-items: center;
     justify-content: space-between;
-    font-size:25px;
     height: 50px;
     background-color:#35495e;
     color:#fff;
     .title {
       display: inline;
-      flex:0 0 auto;
+      flex:1 0 auto;
+      text-align:center;
     }
     .back {
+      flex:0 0 40px;
       &:before {
         content:"<";
-        font-size:25px;
-        color:#ccc;
+        color:#35495e;
         padding-left:5px;
+        white-space:nowrap;
+        
       }
     }
     .moreFunctions {
+      flex:0 0 20px;
       &:after {
         content:"\2022 \2022 \2022";
+        white-space: nowrap;
         font-size:16px;
         color:#ccc;
         padding-right:5px;
-      
       }
-    }  
+    } 
   }
-  
+     
+
   .chatArea {
     height: ~'calc(100% - 100px)';
     background-color:#e9e7ef;
@@ -281,7 +307,7 @@ export default {
         overflow:hidden;
         word-wrap: break-word;
         word-break:break-all;
-        min-height:28px;
+        min-height:30px;
         max-height:130px;
         line-height:22px;
       }
@@ -295,7 +321,7 @@ export default {
 
     #msgInput {
       flex:1 0 auto;
-      height: 40px;
+      height: 30px;
       &:focus {
         outline:none;
       }

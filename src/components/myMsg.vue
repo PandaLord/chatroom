@@ -59,6 +59,7 @@ export default {
           color:#000;
           border-radius: 2px;
           border:1px solid rgba(0,0,0,0.2);
+          z-index:12;
           .msg {
             display:inline;  
             font-size:16px; 
@@ -69,10 +70,10 @@ export default {
               display:inline-block;
               position:absolute;
               z-index:9;
-              top:3px;
-              right:-6px;
-              border:6px solid transparent;
-              border-left-color:rgba(0,0,0,0.3);
+              top:3.8px;
+              right:-6.2px;
+              border:5.3px solid transparent;
+              border-left-color:rgb(163,204,122);
               border-right-width:0;   
             }
             &:after {

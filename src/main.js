@@ -5,7 +5,6 @@ import App from './App'
 import Home from './components/home'
 import Register from './components/register'
 
-
 FastClick.attach(document.body)
 
 Vue.config.productionTip = false

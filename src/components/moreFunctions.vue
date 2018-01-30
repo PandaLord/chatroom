@@ -8,21 +8,15 @@
         </button>
       </li>
       <li>
-        <button>
-          <img class="icons" src="../images/icons/addUser_16px.png" />
-          添加朋友
+        <button @click.stop="toRankList">
+          <img class="icons"  src="../images/icons/rankingList_16px.png" />
+          排行榜
         </button>
       </li>
       <li>
-        <button>
-          <img class="icons" src="../images/icons/scan_16px.png" />
-          扫一扫
-        </button>
-      </li>
-      <li>
-        <button>
-          <img class="icons" src="../images/icons/cash_16px.png" />
-          收付款
+        <button @click.stop="toDailyArticle">
+          <img class="icons"  src="../images/icons/dailyReading_16px.png" />
+          每日一文
         </button>
       </li>
     </ul>
@@ -65,6 +59,16 @@ export default {
     },
     backToChat () {
       this.$emit("backToChat")
+    },
+    toRankList () {
+      let url = this.$router.currentRoute.path + '/rank'
+      this.$router.push(url)
+      this.backToChat()
+    },
+    toDailyArticle () {
+      let url = this.$router.currentRoute.path + '/daily'
+      this.$router.push(url)
+      this.backToChat()
     }
   }
 }
@@ -126,7 +130,7 @@ export default {
       li {
         border:2px solid transparent;
         button {
-          widtH:100%;
+          width:100%;
           text-align:start;
           color:#fff;
           background-color: transparent;
