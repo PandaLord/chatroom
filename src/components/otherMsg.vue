@@ -4,7 +4,7 @@
     <div class="InfoArea">
       <h5 class="userName">{{ data.userName }}</h5>
       <div class="msgArea">
-        <p class="msg">{{ data.msg }}</p>
+        <span class="msg" v-html="data.msg"></span>
       </div>
     </div> 
     
@@ -39,36 +39,40 @@ export default {
       }
     
     .InfoArea {
-      display: inline-block;
+      display: flex;
       position: relative;
+      flex-direction: column;
       margin-left:10px;
       max-width:45%;
-      flex:0 1 auto;
+      flex:0 0 auto;
       .userName {
+        flex:1 0 auto;
         font-size:16px;
         vertical-align: top;
         color:#666;
-        line-height:20px;
-        
+        line-height:20px;   
       }
       .msgArea {   
           display: -webkit-flex; /* Safari */
           display: flex;
           position: relative;
+          flex:0;
+          align-self:flex-start; //这里实现了消息和id不同的宽度
           align-items: center;
           max-width:100%;
           min-width:20px;
           min-height:45px;
-          padding:0 8px;
+          padding:0 3px 0 6px;
           background-color:#fff;
           color:#000;
           border-radius: 2px;
           border:1px solid rgba(0,0,0,0.2);
           .msg {
-            display:inline;
+            display:inline-block;
             font-size:16px;  
             word-wrap: break-word;
             word-break: break-all;
+            
             &::after {
               content:"";
               display:inline-block;

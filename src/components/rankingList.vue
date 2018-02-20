@@ -6,11 +6,11 @@
     </div>
     <div class="nav">
       <ul class="sitesList">
-        <li @click="webChange('acfun')"><a>Acfun</a></li>
+        <li :class="{ active : selectedWeb === 'acfun'}" @click="webChange('acfun')"><a>Acfun</a></li>
         <hr>
-        <li @click="webChange('bilibili')"><a>BiliBili</a></li>
+        <li :class="{ active : selectedWeb === 'bilibili'}" @click="webChange('bilibili')"><a>BiliBili</a></li>
         <hr>
-        <li @click="webChange('maopu')"><a>猫扑</a></li>
+        <li :class="{ active : selectedWeb === 'maopu'}" @click="webChange('maopu')"><a>猫扑</a></li>
         <hr>
       </ul>
     </div>
@@ -43,8 +43,8 @@ export default {
   },
   mounted () {
     var p = this
-    p.socket = io("ws://localhost:8081/rank")
-    
+    p.socket = io("ws://pandachen.top:8081/rank")
+    p.emitData()
     p.socket.on("receiveData",function (data) {
       console.log("接收到服务器传来的排行榜数据")
       p.rankData = data
@@ -128,6 +128,11 @@ export default {
         li {
           margin:10px 1px;
         }
+      }
+      .active {
+        color:#ff851b;
+        font-weight: bold;
+        
       }
     }
     .rankingView {

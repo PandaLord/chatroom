@@ -25,7 +25,7 @@ export default {
   },
   mounted () {
     var p = this
-    p.socket = io('ws://localhost:8081/daily')
+    p.socket = io('ws://pandachen.top:8081/daily')
     p.socket.emit("orderData")
     p.socket.on("receiveData",function (data) { 
       console.log("收到服务器发送的每日一文")
@@ -78,10 +78,10 @@ export default {
       position:absolute;
       left:0;
       top:50px;
-      right:-17px; // 隐藏滚动条
+      right:0; // 隐藏滚动条
       bottom:0;
       z-index:11111;
-      padding:0 5px 0 10px;
+      padding:0 5px 0 5px;
       overflow-y: scroll;
       overflow-x:hidden;
       

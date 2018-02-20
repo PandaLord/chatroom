@@ -4,30 +4,24 @@ var musicApi = require("music-api")
 server.listen(8081)
 
 var userNames = []
-var userDatas = {}
 var msgList = []
 
 
 io.on('connection', function (socket) {
   console.log("有用户进入注册页面")
   let loginName = null
-  function login (data) {
-    let name = data.name
-    let avatar = data.avatar
+  function login (name) {
     if (name === '') {
       socket.emit('loginFailure',"不能使用空白昵称")
     } else if (userNames.indexOf(name) === -1) {
-      userNames.push(name)
-      userDatas.name = {
-        id:userNames.length,
-        points:5,
-        avatar:avatar,
-      }
+      // userNames.push(name)
+      // userDatas.name = {
+      //   id:userNames.length,
+      //   points:5,
+      //   avatar:avatar,
+      // }
       loginName = name
-      socket.emit("loginSuccess", {
-        userName:name,
-        avatar:avatar,
-      })
+      socket.emit("loginSuccess", loginName)
       console.log("登录成功，登录昵称为:" + name)
     } else {
       socket.emit("loginFailure", "昵称重复")
@@ -44,14 +38,46 @@ io.on('connection', function (socket) {
 const home = io.of('/home')
 home.on('connection', function (socket) {
   console.log('有用户进入聊天室')
-  console.log('当前聊天室有'+ userNames)
   let userName = ''
+  let avatar = ''
   home.emit("usersAmount", userNames.length)
-  
   function sendMessage (data) {
+    let pattern = /\[[\u4e00-\u9fa5]+\]/g
+    let emojiList =  [
+      '微笑', '撇嘴', '色', '发呆', '得意', '流泪',
+      '害羞', '闭嘴', '睡', '大哭', '尴尬', '发怒',
+      '调皮', '呲牙', '惊讶', '难过', '酷', '冷汗',
+      '抓狂', '吐', '偷笑', '可爱', '白眼', '傲慢',
+      '饥饿', '困', '惊恐', '流汗', '憨笑', '大兵', 
+      '奋斗', '咒骂', '疑问', '嘘', '晕', '折磨', '衰',
+      '骷髅', '敲打', '再见', '擦汗', '抠鼻', '鼓掌', '糗大了', 
+      '坏笑', '左哼哼', '右哼哼', '哈欠', '鄙视', '委屈', '快哭了', 
+      '阴险', '亲亲', '吓', '可怜', '菜刀', '西瓜', '啤酒', '篮球',
+      '乒乓', '咖啡', '饭', '猪头', '玫瑰', '凋谢', '示爱', '爱心', 
+      '心碎', '蛋糕', '闪电', '炸弹', '刀', '足球', '瓢虫', '便便', 
+      '月亮', '太阳', '礼物', '拥抱', '强', '弱', '握手', '胜利', '抱拳',
+      '勾引', '拳头', '差劲', '爱你', 'NO', 'OK', '爱情', '飞吻', '跳跳',
+      '发抖', '怄火', '转圈', '磕头', '回头', '跳绳', 
+      '挥手', '激动', '街舞','献吻', '左太极', '右太极'
+      ]
+    let list = []
+    let match
+    while (match=pattern.exec(data.msg)) {
+      list.push(match[0])
+    }
+    list.forEach(function (item) {
+      let item2 = item.replace("[","").replace("]","")
+      let index = emojiList.indexOf(item2)
+      if (index !== -1) {
+        let emotion = `<span style="background:
+        url(https://res.wx.qq.com/mpres/htmledition/images/icon/emotion/default218877.gif) 
+          ${index * -24}px 0;width:24px;height:24px;margin:4px 2px 0 2px;
+          vertical-align:sub;display:inline-block"></span>`                        
+        data.msg = data.msg.replace(item,emotion)
+      }    
+    })
     msgList.push(data)
     home.emit("messageReceived", data)
-    console.log(data.userName + ":" + data.msg)
     }
   function sendSystemMessage (message) {
     sendMessage({
@@ -65,12 +91,14 @@ home.on('connection', function (socket) {
     userNames = userNames.filter((name) => {
       return name != userName
     })
-    delete userDatas.userName
-    debugger
-    sendSystemMessage(userName + "离开了聊天室")
-    console.log(userNames)
-    home.emit("usersAmount", userNames.length)
-    console.log(userName + "离开了聊天室")
+    // delete userDatas.userName
+    if (userName !== null && userName !== "") {
+      sendSystemMessage(userName + "离开了聊天室")
+      console.log(userNames)
+      updateUsersAmount()
+      console.log(userName + "离开了聊天室")
+    }
+    
   }
   function serachMusic (type,keyword) {
     return musicApi.searchSong(type, {
@@ -106,13 +134,16 @@ home.on('connection', function (socket) {
       socket.emit("musicOrderError")
     })
   }
-  // function lyricGame () {
-
-  //   let lyricUrl = `http://music.163.com/api/song/lyric?os=pc&id=93920&lv=-1&kv=-1&tv=-1`
-  // }
-  socket.on('passUserName', function (name) {
-    userName = name
+  function updateUsersAmount () {
+    home.emit("usersAmount",userNames.length)
+  }
+  socket.on('passUserData', function (data) {
+    userNames.push(data.userName)
+    userName = data.userName
+    avatar = data.avatar
+    console.log('当前聊天室有'+ userNames)
     sendSystemMessage(userName + "进入了聊天室")
+    updateUsersAmount()
   })
   socket.on('sendMessage', sendMessage)
   socket.on("orderMusic", orderMusic)

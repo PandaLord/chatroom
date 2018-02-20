@@ -18,10 +18,10 @@
     <toast
     v-model="isLoadingMusic" 
     position="middle" 
-    :time="1800" 
+    :time="2200" 
     :text="'搜索中，完成后添加至歌单序列'"  
     :is-show-mask="true"></toast>
-    <toast v-model="musicError" type="cancel" position="middle" text="音乐获取失败，请稍后重试" :time="2000"></toast>
+    <toast v-model="musicError" type="cancel" position="middle" text="音乐获取失败，请稍后重试" :time="2200"></toast>
     <music-player :song="musicList[0]" @musicEnd="autoSwitch"></music-player>
     <div class="chatArea" id="chat_con" @click="chatWindowClick">
       <template v-for="msgData in msgList">
@@ -54,7 +54,7 @@
           <img src="../images/icons/emoji_30px.png">
         </button>
         <transition name="emoji">
-          <emoji v-if="emojiSwitch" class="emoji"></emoji>
+          <emoji v-if="emojiSwitch" class="emoji" @inputEmoji="inputEmoji"></emoji>
         </transition>
         
     </footer>
@@ -100,38 +100,46 @@ export default {
   },
   mounted () {
     var p = this
-    p.socket = io("ws://localhost:8081/home")
-    p.userName = p.$route.params.id
-    p.avatar = p.$route.hash.slice(1)
-    p.socket.emit("passUserName", p.userName)
-    p.socket.on("messageReceived", function (data) {
-      p.msgList.push(data)
-      // 这里的nextTick是针对vue更新DOM后再获取，否则会有DOM更新与方法执行的时间差
-      p.chatScroll()  
-    })
-    p.socket.on("usersAmount",function (amount) {
-      console.log("接受到服务端发送的在线人数")
-      console.log(amount)
-      p.userAmount = amount
-    })
-    p.socket.on("orderedMusicList", function (list) {
-      p.musicList = list
-    })
-    p.socket.on("musicOrderReceived", function (data) {
-      console.log("接收到服务端传来的音乐url")
-      p.musicList.push(data)
-    })
-    p.socket.on("musicOrderError", function (data) {
-      p.isLoadingMusic = false
-      p.musicError = true
+    if (!this.$cookies.get("userName")) {
+      p.$router.replace("/")
+    } else {
+      p.socket = io("ws://pandachen.top:8081/home")
+      p.userName = p.$cookies.get("userName")
+      p.avatar = p.$cookies.get("avatar")
+      p.socket.emit("passUserData", 
+      {
+        userName:p.userName,
+        avatar:p.avatar,
+      })
+      p.socket.on("messageReceived", function (data) {
+        p.msgList.push(data)
+        
+        p.chatScroll()
+      })
+      p.socket.on("usersAmount",function (amount) {
+        p.userAmount = amount
+      })
+      p.socket.on("orderedMusicList", function (list) {
+        p.musicList = list
+      })
+      p.socket.on("musicOrderReceived", function (data) {
+        
+        p.musicList.push(data)
+      })
+      p.socket.on("musicOrderError", function (data) {
+        p.isLoadingMusic = false
+        p.musicError = true
 
-    })
+      }) 
+
+    }
     
   },
   methods: {
     // 客户端发送消息方法
     sendMessage (type,message,user) { // type区分系统消息和用户消息，user发送用户id
       var p = this
+      p.emojiSwitch = false
       let pattern = /\S+/
       let test = message.match(pattern)
       if (test) {
@@ -154,6 +162,7 @@ export default {
       this.musicList.shift()     
     },
     chatScroll () {
+      // 这里的nextTick是针对vue更新DOM后再获取，否则会有DOM更新与方法执行的时间差
       this.$nextTick(() => {
         let end = document.getElementById("chat_con")
         // 这里是使滚动条滚到最底部的代码
@@ -164,7 +173,10 @@ export default {
       this.emojiSwitch = !this.emojiSwitch
       this.chatScroll()
     },
-    sendEmoji () {
+    inputEmoji (item) {
+      this.message += `[${item}]`
+      document.getElementById("msgInput").focus()
+      this.textAreaSuit()
 
     },
     orderMusic (songName) {
@@ -213,11 +225,18 @@ export default {
     clear: both;
   }
   .viewport {
-    display: -webkit-flex; /* Safari */
+    display: -webkit-box; /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+    display: -moz-box; /* 老版本语法: Firefox (buggy) */
+    display: -ms-flexbox; /* 混合版本语法: IE 10 */
+    display: -webkit-flex; /* 新版本语法: Chrome 21+ */
     display: flex;
     height:100%;
     overflow:hidden;
+    -webkit-box-orient: vertical; // flex-direction兼容性语法
+    -webkit-box-direction: normal; // flex-direction兼容性语法
     flex-direction: column;
+    -webkit-justify-content:justify; // justify-content兼容性语法
+    -webkit-box-pack: justify; // justify-content兼容性语法
     justify-content: space-between;
     max-height:100%;
     
@@ -242,22 +261,35 @@ export default {
   .header {
     width:100%;
     overflow:hidden;
+    display: -webkit-box; /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+    display: -moz-box; /* 老版本语法: Firefox (buggy) */
+    display: -ms-flexbox; /* 混合版本语法: IE 10 */
+    display: -webkit-flex; /* 新版本语法: Chrome 21+ */
     display:flex;
-    flex:1 0 auto;
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis:auto;
+    -webkit-align-items: center; // align-itens 兼容性语法
+    -webkit-box-align: center; // align-items 兼容性语法
     align-items: center;
+    -webkit-box-pack: justify; // justify-content兼容性语法
     justify-content: space-between;
     height: 50px;
     background-color:#35495e;
     color:#fff;
     .title {
       display: inline;
+      -webkit-box-flex:1.0;
       flex:1 0 auto;
       text-align:center;
     }
     .back {
+      -webkit-box-flex:0;
       flex:0 0 40px;
+      display:inline-block;
       &:before {
         content:"<";
+        display:inline-block;
         color:#35495e;
         padding-left:5px;
         white-space:nowrap;
@@ -265,9 +297,12 @@ export default {
       }
     }
     .moreFunctions {
+      -webkit-box-flex:0;
       flex:0 0 20px;
+      display:inline-block;
       &:after {
         content:"\2022 \2022 \2022";
+        display:inline-block;
         white-space: nowrap;
         font-size:16px;
         color:#ccc;
@@ -286,19 +321,30 @@ export default {
   }
 
   footer {
-    display: -webkit-flex; /* Safari */
+    display: -webkit-box; /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+    display: -moz-box; /* 老版本语法: Firefox (buggy) */
+    display: -ms-flexbox; /* 混合版本语法: IE 10 */
+    display: -webkit-flex; /* 新版本语法: Chrome 21+ */
     display: flex;
+    -webkit-box-lines:multiple;// flex-wrap兼容性语法，很可能无效
     flex-wrap:wrap;
     width: 100%;
     background-color:#f0f0f4;
     border: 3px solid #f0f0f4;
     box-shadow: 1px 0 3px 0 rgba(0, 0, 0, 0.3);
+    -webkit-box-align:center; // align-items兼容性语法
     align-items: center;
     
     .expandArea {
       position: relative;
+      display: -webkit-box; /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+      display: -moz-box; /* 老版本语法: Firefox (buggy) */
+      display: -ms-flexbox; /* 混合版本语法: IE 10 */
+      display: -webkit-flex; /* 新版本语法: Chrome 21+ */
       display:flex;
+      -webkit-box-flex:1.0; // flex兼容性语法
       flex:1 0 auto;
+      -webkit-box-align:center; // align-items兼容性语法
       align-items:center;
       .msgInput {
         width:100%;
@@ -320,6 +366,7 @@ export default {
     }
 
     #msgInput {
+      -webkit-box-flex:1.0; // flex兼容性语法
       flex:1 0 auto;
       height: 30px;
       &:focus {
@@ -327,6 +374,7 @@ export default {
       }
     }
     .emojiButton {
+      -webkit-box-flex:0; // flex兼容性语法
       flex:0 0 40px;
       display:block;
       height:32px;

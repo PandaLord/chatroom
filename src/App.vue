@@ -36,6 +36,7 @@ body {
 }
 .mainView-enter-active,
 .mainView-leave-active, {
+  -webkit-transition:left .6s ease-in-out;
   transition:left .6s ease-in-out;
 }
 .mainView-leave-to {

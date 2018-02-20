@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Register from '@/components/register'
-import Home from "@/components/home"
-import Emoji from "@/components/emoji"
-import rankingList from "@/components/rankingList"
-import Daily from "@/components/daily"
+
+
+const Register = r => require.ensure([], () => r(require('../components/register')), 'Register')
+const Home = r => require.ensure([], () => r(require('../components/home')), 'Home')
+const Emoji = r => require.ensure([], () => r(require('../components/emoji')), 'Emoji')
+const rankingList = r => require.ensure([], () => r(require('../components/rankingList')), 'rankingList')
+const Daily = r => require.ensure([], () => r(require('../components/daily')), 'Daily')
 
 Vue.use(Router)
 
@@ -12,20 +14,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Register',
       component: Register
     },
     {
-     path: '/home/:id/',
-     name: 'Home',
+     path: '/home',
      component: Home,
      children: [
        {
-         path:'/home/:id/rank',
+         path:'/home/rank',
          component:rankingList,
        },
        {
-         path:'/home/:id/daily',
+         path:'/home/daily',
          component:Daily,
        }
      ]

@@ -2,7 +2,7 @@
   <div class="myMsg">
     <div class="InfoArea">
       <div class="msgArea">
-        <p class="msg">{{ data.msg }}</p>
+        <span class="msg" v-html="data.msg"></span>
       </div>
     </div> 
     <img class="avatar" :src='"../images/pics/Avatar_" + data.avatar + "_45x45.png"' />
@@ -12,11 +12,8 @@
 export default {
   data () {
     return {
-
+      
     }
-  },
-  ready () {
-
   },
   props:["data"]
 }
@@ -61,7 +58,7 @@ export default {
           border:1px solid rgba(0,0,0,0.2);
           z-index:12;
           .msg {
-            display:inline;  
+            display:inline-block;  
             font-size:16px; 
             word-wrap: break-word;
             word-break: break-all;        

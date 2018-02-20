@@ -2,14 +2,15 @@
   <div class="emoji">
     <ul class="emojiList">
       <li v-for="(item,index) in list"
-      :key="'li_' + index">
-        <emotion>{{ item }}</emotion>
+      :key="'li_' + index"
+      >
+        <emotion @click.native="emotionClick(item)">{{ item }}</emotion>
       </li>
-    </ul>
+    </ul> 
   </div>
 </template>
 <script>
-import { WechatEmotion as Emotion} from "vux"
+import { WechatEmotion as Emotion } from "vux"
 export default {
   components:{
     Emotion
@@ -34,7 +35,13 @@ export default {
         '挥手', '激动', '街舞','献吻', '左太极', '右太极'
         ]
     }
-  }
+  },
+  methods: {
+    emotionClick (item) {
+      console.log(item)
+      this.$emit("inputEmoji",item)
+    }
+  },
 }
 </script>
 <style lang="less" scoped>
@@ -45,7 +52,8 @@ export default {
   .emoji {
     margin-top:4px;
     width:100%; 
-    height:250px;
+    height:150px;
+    overflow:scroll;
     background-color: #f0f0f4;
     box-shadow: 1px 0 3px 0 rgba(0, 0, 0, 0.3);
     .emojiList{
@@ -54,6 +62,7 @@ export default {
       display: flex;
       flex-wrap:wrap;
       width:100%;
+      padding-bottom:50px;
       justify-content: flex-start;
       align-items: center;
       li {

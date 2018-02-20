@@ -5,7 +5,7 @@
       
       <div class="interactArea">
         <label>昵称:</label>
-        <input class="userName" v-model="userName" @keyup.13="login" />
+        <input class="userName" v-model="userName" @keyup.13="login" maxlength="10"/>
         <a class="changeAvatar" @click="isAvatar = !isAvatar" href="#">选择头像</a>
       </div>
       
@@ -86,13 +86,18 @@ export default {
 
   mounted () {
     var p = this
-    p.socket = io("ws://localhost:8081")
-    p.socket.on("loginSuccess", function (data) { 
-      if (data.userName === p.userName) {
+    if (p.$cookies.isKey('userName')) {
+      p.$router.replace('/home')
+    }
+    p.socket = io("ws://pandachen.top:8081")
+    p.socket.on("loginSuccess", function (name) { 
+      if (name === p.userName) {
         p.loginSuccess = true
         console.log("接受登录成功信息")
+        p.$cookies.set("userName", p.userName, "12h")
+        .set("avatar", p.avatar,"12h")
         setTimeout(function () {
-          p.$router.replace(`/home/${p.userName}#${p.avatar}`)
+          p.$router.replace(`/home`) 
         },1500)
       } else {
         p.loginFailure = true
@@ -111,10 +116,9 @@ export default {
       if (p.avatar === '') {
         p.avatar = Math.floor(Math.random() * 12 + 1) + ''
       }
-      p.socket.emit("login", {
-        name:p.userName,
-        avatar:p.avatar
-      })  
+      p.userName = p.userName.replace(/</g,"&lt;")
+      p.userName = p.userName.replace(/>/g,"&gt;")
+      p.socket.emit("login", p.userName)  
 
     },
   }
@@ -151,6 +155,7 @@ export default {
         line-height:25px;
         margin:0 auto;
         width:280px;
+        display: -webkit-box;
         display: -webkit-flex; /* Safari */
         display: inline-flex;
         white-space: nowrap;

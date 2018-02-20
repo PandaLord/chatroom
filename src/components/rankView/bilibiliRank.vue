@@ -32,7 +32,7 @@ export default {
       tabIndex:'',
       list:['综合','动画','游戏','娱乐','鬼畜','影视','科技','音乐','舞蹈','生活'],
       selectedTab:'',
-      clickedTabIndex:'1'
+      clickedTabIndex:0,
   
     }
   },
@@ -42,10 +42,6 @@ export default {
     Scroller,
     Card,
     
-  },
-  mounted () {
-    let firstTab = document.getElementsByClassName("tab")[0]
-    firstTab.click()
   },
   methods:{
     selectTab (item,index,event) {
